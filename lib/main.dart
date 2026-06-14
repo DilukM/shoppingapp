@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/product_list_screen.dart';
+import 'screens/main_screen.dart';
 
 void main() {
   runApp(const ShoppingApp());
@@ -16,7 +16,7 @@ class ShoppingApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: const ProductListScreen(),
+      home: const MainScreen(),
     );
   }
 }

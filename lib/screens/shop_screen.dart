@@ -4,16 +4,15 @@ import '../database/database_helper.dart';
 import '../models/shopping_item.dart';
 import '../utils/toast_utils.dart';
 import 'cart_screen.dart';
-import 'manage_product_screen.dart';
 
-class ProductListScreen extends StatefulWidget {
-  const ProductListScreen({super.key});
+class ShopScreen extends StatefulWidget {
+  const ShopScreen({super.key});
 
   @override
-  State<ProductListScreen> createState() => _ProductListScreenState();
+  State<ShopScreen> createState() => _ShopScreenState();
 }
 
-class _ProductListScreenState extends State<ProductListScreen> {
+class _ShopScreenState extends State<ShopScreen> {
   List<ShoppingItem> _products = [];
   bool _isLoading = true;
 
@@ -30,9 +29,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
     try {
       final products = await DatabaseHelper.instance.getProducts();
-      setState(() {
-        _products = products;
-      });
+      if (mounted) {
+        setState(() {
+          _products = products;
+        });
+      }
     } catch (e) {
       if (mounted) {
         ToastUtils.showError(context, 'Failed to load products: $e');
@@ -59,53 +60,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
     }
   }
 
-  Future<void> _deleteProduct(ShoppingItem product) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Product'),
-        content: Text('Are you sure you want to delete ${product.name}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      try {
-        await DatabaseHelper.instance.deleteProduct(product.id!);
-        if (mounted) ToastUtils.showInfo(context, 'Product deleted.');
-        _loadProducts();
-      } catch (e) {
-        if (mounted) ToastUtils.showError(context, 'Failed to delete: $e');
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shopping App'),
+        title: const Text('Shop'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: 'Add Product',
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ManageProductScreen()),
-              );
-              if (result == true) _loadProducts();
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.shopping_cart),
             onPressed: () {
@@ -187,44 +147,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                       color: Theme.of(context).primaryColor,
                                     ),
                                   ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      PopupMenuButton<String>(
-                                        padding: EdgeInsets.zero,
-                                        onSelected: (value) async {
-                                          if (value == 'edit') {
-                                            final result = await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) => ManageProductScreen(item: product)),
-                                            );
-                                            if (result == true) _loadProducts();
-                                          } else if (value == 'delete') {
-                                            _deleteProduct(product);
-                                          }
-                                        },
-                                        itemBuilder: (context) => [
-                                          const PopupMenuItem(
-                                            value: 'edit',
-                                            child: Text('Edit'),
-                                          ),
-                                          const PopupMenuItem(
-                                            value: 'delete',
-                                            child: Text('Delete', style: TextStyle(color: Colors.red)),
-                                          ),
-                                        ],
-                                        icon: const Icon(Icons.more_vert, size: 20),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: ElevatedButton(
+                                      onPressed: () => _addToCart(product),
+                                      style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                                        minimumSize: const Size(0, 36),
                                       ),
-                                      ElevatedButton(
-                                        onPressed: () => _addToCart(product),
-                                        style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                                          minimumSize: const Size(0, 32),
-                                        ),
-                                        child: const Text('Add'),
-                                      ),
-                                    ],
+                                      child: const Text('Add to Cart'),
+                                    ),
                                   ),
                                 ],
                               ),
