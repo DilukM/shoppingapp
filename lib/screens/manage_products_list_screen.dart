@@ -110,14 +110,16 @@ class _ManageProductsListScreenState extends State<ManageProductsListScreen> {
                         vertical: 8.0,
                       ),
                       child: ListTile(
-                        leading: product.imageBase64 != null
+                        leading: product.imageBase64 != null && product.imageBase64!.isNotEmpty
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.memory(
-                                  base64Decode(product.imageBase64!),
+                                  base64Decode(product.imageBase64!.replaceAll(RegExp(r'\s+'), '')),
                                   width: 50,
                                   height: 50,
                                   fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                        Container(width: 50, height: 50, color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey)),
                                 ),
                               )
                             : Container(

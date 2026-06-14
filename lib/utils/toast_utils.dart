@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 class ToastUtils {
   static void showSuccess(BuildContext context, String message) {
-    _showSnackBar(context, message, Colors.green);
+    _showSnackBar(context, message, Colors.grey[800]!);
   }
 
   static void showError(BuildContext context, String message) {
-    _showSnackBar(context, message, Colors.red);
+    _showSnackBar(context, message, Colors.grey[800]!);
   }
 
   static void showInfo(BuildContext context, String message) {
-    _showSnackBar(context, message, Colors.blue);
+    _showSnackBar(context, message, Colors.grey[800]!);
   }
 
   static void _showSnackBar(BuildContext context, String message, Color color) {

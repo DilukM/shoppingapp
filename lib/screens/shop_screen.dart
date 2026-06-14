@@ -4,6 +4,7 @@ import '../database/database_helper.dart';
 import '../models/shopping_item.dart';
 import '../utils/toast_utils.dart';
 import 'cart_screen.dart';
+import 'manage_products_list_screen.dart';
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
@@ -77,6 +78,46 @@ class _ShopScreenState extends State<ShopScreen> {
           ),
         ],
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.purple,
+              ),
+              child: Text(
+                'Shopping App',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.storefront),
+              title: const Text('Shop'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Manage Products'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ManageProductsListScreen()),
+                ).then((_) {
+                  // Reload products when coming back from Manage Products just in case
+                  _loadProducts();
+                });
+              },
+            ),
+          ],
+        ),
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _products.isEmpty
@@ -103,10 +144,12 @@ class _ShopScreenState extends State<ShopScreen> {
                         children: [
                           Expanded(
                             flex: 3,
-                            child: product.imageBase64 != null
+                            child: product.imageBase64 != null && product.imageBase64!.isNotEmpty
                                 ? Image.memory(
-                                    base64Decode(product.imageBase64!),
+                                    base64Decode(product.imageBase64!.replaceAll(RegExp(r'\s+'), '')),
                                     fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        Container(color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey)),
                                   )
                                 : Container(
                                     color: Colors.grey[200],

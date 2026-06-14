@@ -5,6 +5,8 @@ final List<ShoppingItem> initialProducts = [
     name: 'Wireless Headphones',
     price: 99.99,
     description: 'Noise-cancelling over-ear headphones with 20 hours of battery life.',
+    // Tiny base64 encoded transparent/grey pixel just to show functionality
+    imageBase64: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
   ),
   ShoppingItem(
     name: 'Smart Watch',

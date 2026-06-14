@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
 import '../models/shopping_item.dart';
 import '../utils/toast_utils.dart';
+import 'checkout_wizard_screen.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -83,21 +84,12 @@ class _CartScreenState extends State<CartScreen> {
       return;
     }
 
-    try {
-      // Mock checkout flow
-      await DatabaseHelper.instance.clearCart();
-      if (mounted) {
-        ToastUtils.showSuccess(
-          context,
-          'Checkout successful! Total: \$ ${_totalAmount.toStringAsFixed(2)}',
-        );
-        Navigator.pop(context); // Go back to product list
-      }
-    } catch (e) {
-      if (mounted) {
-        ToastUtils.showError(context, 'Checkout failed. Please try again.');
-      }
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CheckoutWizardScreen(totalAmount: _totalAmount),
+      ),
+    );
   }
 
   @override
@@ -123,14 +115,16 @@ class _CartScreenState extends State<CartScreen> {
                                 vertical: 8.0,
                               ),
                               child: ListTile(
-                                leading: item.imageBase64 != null
+                                leading: item.imageBase64 != null && item.imageBase64!.isNotEmpty
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
                                         child: Image.memory(
-                                          base64Decode(item.imageBase64!),
+                                          base64Decode(item.imageBase64!.replaceAll(RegExp(r'\s+'), '')),
                                           width: 50,
                                           height: 50,
                                           fit: BoxFit.cover,
+                                          errorBuilder: (context, error, stackTrace) =>
+                                            Container(width: 50, height: 50, color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey)),
                                         ),
                                       )
                                     : Container(

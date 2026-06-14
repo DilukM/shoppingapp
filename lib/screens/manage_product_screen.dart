@@ -124,12 +124,14 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.grey.shade400),
                       ),
-                      child: _imageBase64 != null
+                      child: _imageBase64 != null && _imageBase64!.isNotEmpty
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.memory(
-                                base64Decode(_imageBase64!),
+                                base64Decode(_imageBase64!.replaceAll(RegExp(r'\s+'), '')),
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.broken_image, size: 50, color: Colors.grey),
                               ),
                             )
                           : const Icon(Icons.image, size: 50, color: Colors.grey),
